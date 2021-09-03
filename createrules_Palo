@@ -1,0 +1,46 @@
+
+import csv
+import requests
+
+apikey = "**********************"
+
+hostname = "https://****"
+urlmultisource = "{}/api/?type=config&action=set&key={}&xpath=/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name='{}']&element=<source>{}</source><destination><member>{}</member></destination><service><member>application-default</member></service><application><member>{}</member></application><action>allow</action><source-user><member>any</member></source-user><option><disable-server-response-inspection>no</disable-server-response-inspection></option><negate-source>no</negate-source><negate-destination>no</negate-destination><disabled>no</disabled><log-start>no</log-start><log-end>yes</log-end><from>{}</from><to>{}</to>"
+#url = "{}/api/?type=config&action=set&key={}&xpath=/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name='{}']&element=<source><member>{}</member></source><destination><member>{}</member></destination><service><member>application-default</member></service><application><member>{}</member></application><action>allow</action><source-user><member>any</member></source-user><option><disable-server-response-inspection>no</disable-server-response-inspection></option><negate-source>no</negate-source><negate-destination>no</negate-destination><disabled>no</disabled><log-start>no</log-start><log-end>yes</log-end><from><member>{}</member></from><to><member>{}</member></to>"
+filename = "****\\11.csv"
+rulename = "***"
+n = 1
+
+
+# with open(filename, 'r') as file:
+#     reader = csv.reader(file)
+#     for row in reader:
+#         name = rulename + "-" + str(n)
+#         n+=1
+#         conf = requests.get(url.format(hostname, apikey, name, row[0], row[1], row[2], row[3], row[4]), verify=False)
+#         print(row)
+#         #print(row)
+
+sources = ""
+with open(filename, 'r', encoding='utf-8-sig') as file:
+    reader = csv.reader(file)
+    for row in reader:
+        if ";" in row[0]:
+            sources = ""
+            newrow = list(row[0].split(";"))
+            print(newrow)
+            for xx in newrow:
+                sources = sources + "<member>{}</member>".format(xx) + "\n"
+            print(sources)
+            name = rulename + "-" + str(n)
+            n += 1
+            conf = requests.get(urlmultisource.format(hostname, apikey, name, sources, row[1], row[2], row[3], row[4]),
+                                verify=False)
+            print(conf)
+        else:
+
+
+            name = rulename + "-" + str(n)
+            n+=1
+            conf = requests.get(url.format(hostname, apikey, name, row[0], row[1], row[2], row[3], row[4]), verify=False)
+            print(conf)
